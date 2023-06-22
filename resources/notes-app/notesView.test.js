@@ -4,10 +4,37 @@
 
 const fs = require('fs');
 
-const NotesModel = require('./notesModel');
-const NotesView = require('./notesView'); 
+const NotesView = require("./notesView");
+const NotesModel = require("./notesModel");
+const NotesClient = require("./client");
 
-describe('NotesView', () => {
+require("jest-fetch-mock").enableMocks();
+
+jest.mock("./client");
+
+describe("NotesView", () => {
+  beforeEach(() => {
+    document.body.innerHTML = fs.readFileSync("./index.html");
+  });
+
+  it("display notes from API", () => {
+    const model = new NotesModel();
+    const mockClient = new NotesClient();
+
+    mockClient.loadNotes.mockImplementation((callback) => {
+      const data = ["This note is coming from the mock"];
+      callback(data);
+    });
+
+    const view = new NotesView(model, mockClient);
+    view.displayNotesFromApi();
+
+    expect(document.querySelectorAll("div.note").length).toBe(1);
+    expect(document.querySelector("div.note").textContent).toBe(
+      "This note is coming from the mock"
+    );
+  }); 
+
   it('displays two notes', () => {
     document.body.innerHTML = fs.readFileSync('./index.html');
 
@@ -56,4 +83,9 @@ it('clear the list of previous notes before displaying', () => {
 
   expect(document.querySelectorAll('div.note').length).toEqual(2);
 });
+
+
+
+
+
 });
