@@ -30,4 +30,20 @@ describe('NotesClient class', () => {
       done();
     });
   });
+
+  it('adds note to the backend', (done) => {
+    const client = new NotesClient();
+    const mockNote = { 
+      content: "example of added note"
+    };
+
+
+    fetch.mockResponseOnce(JSON.stringify(mockNote));
+
+    client.createNote(mockNote, (returnedDataFromApi) => {
+      expect(returnedDataFromApi.content).toBe("example of added note")
+      done();
+    });
+  })
+
 });
